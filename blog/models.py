@@ -2,21 +2,75 @@ from django.db import models
 import sorl.thumbnail
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.utils import timezone
+from django.urls import reverse
+from taggit.managers import TaggableManager
 
-superuser = User.objects.filter(is_superuser=True)
+user = User.objects.all()
+
+for users in user:
+	if users.is_superuser:
+		user = users
+		break
+
+
+class PublishedManager(models.Manager):
+	"""docstring for PublishedManager
+		This is a custom post manager that returns all published posts
+
+	"""
+	def get_queryset(self):
+		return super(PublishedManager, self).get_queryset().filter(status='published')
+		
 
 class Post(models.Model):
-	author = models.ForeignKey(User, on_delete=models.CASCADE, default=superuser[0].id)
-	title = models.CharField(max_length=255)
-	content = models.TextField()
-	excerpt = models.TextField(max_length=500, null=True)
-	image = sorl.thumbnail.ImageField(upload_to='uploads/')
-	added = models.DateTimeField(default=datetime.now())
+	STATUS_CHOICES	=	(	 							
+		('draft',	'Draft'),								
+		('published',	'Published'),				
+		)
+
+	author 		= models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
+	title 		= models.CharField(max_length=255)
+	slug		= models.SlugField(max_length=250, unique_for_date='publish')
+	content 	= models.TextField()
+	image 		= sorl.thumbnail.ImageField(upload_to='uploads/')
+	publish		= models.DateTimeField(default=timezone.now)
+	created		= models.DateTimeField(auto_now_add=True, null=True, blank=True)				
+	updated		= models.DateTimeField(auto_now=True)				
+	status		= models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+	objects		= models.Manager()				
+	published	= PublishedManager()
+	tags 		= TaggableManager()
 
 
-class Profile(models.Model):
-	author = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-	firstname = models.CharField(max_length=255)
-	lastname = models.CharField(max_length=255)
-	email = models.EmailField(max_length=255)
-	avatar = sorl.thumbnail.ImageField(upload_to='uploads/profiles')
+	class	Meta:								
+		ordering	=	('-publish',)
+
+	def __str__(self):
+		return self.title
+
+
+	def	get_absolute_url(self):								
+		return	reverse('blog:post_detail',																							
+			args=[self.publish.year,																													
+			self.publish.month,																													
+			self.publish.day,																													
+			self.slug])
+
+
+
+
+class	Comment(models.Model):					
+	post	=	models.ForeignKey(Post,	on_delete=models.CASCADE, related_name='comments')				
+	name	=	models.CharField(max_length=80)					
+	email	=	models.EmailField()					
+	body	=	models.TextField()					
+	created	=	models.DateTimeField(auto_now_add=True)					
+	updated	=	models.DateTimeField(auto_now=True)					
+	active	=	models.BooleanField(default=True)	
+	
+	class	Meta:									
+		ordering	=	('created',)	
+	
+	def	__str__(self):									
+		return	'Comment	by	{}	on	{}'.format(self.name,	self.post)
