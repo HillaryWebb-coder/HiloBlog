@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Comment
-from .forms import PostCreateForm, SignUpForm, CommentForm
+from .forms import EmailShareForm, PostCreateForm, SignUpForm, CommentForm
 from django.contrib.auth import login, authenticate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from taggit.models import Tag
+from django.core.mail import send_mail
 from django.db.models import Count
 
 
@@ -96,5 +97,21 @@ def post_list_by_tag_view(request, tag_slug=None):
     return render(request, "post_tags_list.html", context)
 
 
-def posts_search_view(request):
-    query = request.GET.get("search")
+# def posts_search_view(request):
+#     query = request.GET.get("search")
+
+def post_share_view(request, post_id):
+    post = get_object_or_404(Post, id=post_id, status="published")
+    form = EmailShareForm(request.POST or None)
+
+    if form.is_valid():
+        data = form.cleaned_data
+        subject = f"{data['name']} has shared {post.title}"
+        abs_url = request.build_absolute_uri(post.get_absolute_url())
+        body = f"You can visit this link: {abs_url}<br />. {data['name']} also commented {data['comment']}"
+        from_email = data["email"]
+        to_email = data["to"]
+        send_mail(subject, body, from_email, [
+            to_email, ], fail_silently=False)
+
+    return render(request, 'email_share.html', {"form": form})

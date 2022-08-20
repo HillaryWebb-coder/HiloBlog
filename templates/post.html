@@ -26,6 +26,10 @@
       <!-- Post Content -->
       <p class="lead">{{ post.content }}</p>
 
+      <hr>
+      <div class="d-flex align-items-center"><a href="{% url 'blog:share_view' post.id%}">Share</a></div>
+      <hr>
+
       <h2 class="mt-5">Similar Posts</h2>
       <div class="row my-4">
         {% for post in similar_posts %}
