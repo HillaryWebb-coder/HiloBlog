@@ -8,4 +8,4 @@ Features implemented include:
 - show related posts
 - share posts
 
-#####Tech Stack: Python/Django, HTML/CSS/Bootstrap
+###### Tech Stack: Python/Django, HTML/CSS/Bootstrap
