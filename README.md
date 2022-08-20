@@ -6,6 +6,7 @@ Features implemented include:
 - dynamic urls
 - sort posts by categories
 - show related posts
-- share posts
+- share posts via email
+- rss feed for posts
 
 ###### Tech Stack: Python/Django, HTML/CSS/Bootstrap
