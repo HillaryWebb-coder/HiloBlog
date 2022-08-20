@@ -3,91 +3,81 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-  <!-- Page Content -->
-  <div class="container mt-5">
-    <div class="row">
-      <!-- Post Content Column -->
-      <div class="col-lg-8">
-        <!-- Title -->
-        <h1 class="mt-4">{{ post.title }}</h1>
-        <!-- Author -->
-        <p class="lead">
-          Posted by
-          <a href="#">{{ post.author }}</a>
-        </p>
-        <p class="text-gray-dark">Tags: {{ post.tags.all|join:", " }}</p>
-        <hr>
-        <!-- Date/Time -->
-        <p>Posted on {{ post.publish|date }}</p>
-        <hr>
-        <!-- Preview Image -->
-        <img class="img-fluid rounded" src="{{ post.image.url }}" alt="">
-        <hr>
-        <!-- Post Content -->
-        <p class="lead">{{ post.content }}</p>
-        <blockquote class="blockquote">
-          <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-          <footer class="blockquote-footer">Someone famous in
-            <cite title="Source Title">Source Title</cite>
-          </footer>
-        </blockquote>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error, nostrum, aliquid, animi, ut quas placeat totam sunt tempora commodi nihil ullam alias modi dicta saepe minima ab quo voluptatem obcaecati?</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Harum, dolor quis. Sunt, ut, explicabo, aliquam tenetur ratione tempore quidem voluptates cupiditate voluptas illo saepe quaerat numquam recusandae? Qui, necessitatibus, est!</p>
-        <hr>
-        
+<!-- Page Content -->
+<div class="container mt-5">
+  <div class="row">
+    <!-- Post Content Column -->
+    <div class="col-lg-8">
+      <!-- Title -->
+      <h1 class="mt-4">{{ post.title }}</h1>
+      <!-- Author -->
+      <p class="lead">
+        Posted by
+        <a href="#">{{ post.author }}</a>
+      </p>
+      <p class="text-gray-dark">Tags: {{ post.tags.all|join:", " }}</p>
+      <hr>
+      <!-- Date/Time -->
+      <p>Posted on {{ post.publish|date }}</p>
+      <hr>
+      <!-- Preview Image -->
+      <img class="img-fluid rounded" src="{{ post.image.url }}" alt="">
+      <hr>
+      <!-- Post Content -->
+      <p class="lead">{{ post.content }}</p>
 
-        <h2 class="mt-5">Similar Posts</h2>
-        <div class="row my-4">
+      <h2 class="mt-5">Similar Posts</h2>
+      <div class="row my-4">
         {% for post in similar_posts %}
-          <div class="col-3">
-            <img class="h-25" src="{{post.image.url}}" alt="{{ post.title }}" width="25px" height="25px">
-            <div>
-              <p class="h6">{{ post.title|title }}</p>
-              <a href="{{ post.get_absolute_url }}" class="btn btn-outline_primary">&rarr;</a>
-            </div>
+        <div class="col-3">
+          <img class="h-25" src="{{ post.image.url }}" alt="{{ post.title }}" width="25px" height="25px">
+          <div>
+            <p class="h6">{{ post.title|title }}</p>
+            <a href="{{ post.get_absolute_url }}" class="btn btn-outline_primary">&rarr;</a>
           </div>
-          {% empty %}
-          <p>There are no similar posts</p>
-          {% endfor %}
         </div>
+        {% empty %}
+        <p>There are no similar posts</p>
+        {% endfor %}
+      </div>
 
-        {%  with  comments.count  as  total_comments  %}    
-          <h2> {{  total_comments  }} comment{{ total_comments|pluralize }} </h2> 
-          {%  endwith %}
-        <!-- Single Comment -->
-        <div>
-          {% for comment in comments %}
-          <div  class="media mb-4">
+      {%  with  comments.count  as  total_comments  %}
+      <h2> {{ total_comments }} comment{{ total_comments|pluralize }} </h2>
+      {%  endwith %}
+      <!-- Single Comment -->
+      <div>
+        {% for comment in comments %}
+        <div class="media mb-4">
           <img class="d-flex mr-3 rounded-circle" src="./Blog Post - Start Bootstrap Template_files/50x50" alt="">
           <div class="media-body">
             <h5 class="mt-0">{{ comment.name }} on {{ comment.created }}</h5>
             <p>{{ comment.body|linebreaks }}</p>
           </div>
-          </div>
-          {% empty %}
-          <p>No Comments yet</p>
-          {% endfor %}
         </div>
-
-        <!-- Comments Form -->
-        {% if new_comment %}
-        <p class="h6"> Your comment has been added </p>
-        {% else %}
-        <div class="card my-4">
-          <h5 class="card-header">Leave a Comment:</h5>
-          <div class="card-body">
-            <form action="." method="post">
-              {{ comment_form|crispy }}
-              {% csrf_token %}
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-          </div>
-        </div>
-        {% endif %}
+        {% empty %}
+        <p>No Comments yet</p>
+        {% endfor %}
       </div>
-      {% include "sidebar.html" %}
+
+      <!-- Comments Form -->
+      {% if new_comment %}
+      <p class="h6"> Your comment has been added </p>
+      {% else %}
+      <div class="card my-4">
+        <h5 class="card-header">Leave a Comment:</h5>
+        <div class="card-body">
+          <form action="." method="post">
+            {{ comment_form|crispy }}
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
     </div>
-    <!-- /.row -->
+    {% include "sidebar.html" %}
   </div>
-  <!-- /.container -->
- {% endblock %}
+  <!-- /.row -->
+</div>
+<!-- /.container -->
+{% endblock %}
